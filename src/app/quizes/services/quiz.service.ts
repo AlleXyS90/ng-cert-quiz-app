@@ -24,7 +24,7 @@ export class QuizService {
   }
 
   createQuiz(
-    categoryId: string,
+    categoryId: number,
     difficulty: Difficulty
   ): Observable<Question[]> {
     return this.http
