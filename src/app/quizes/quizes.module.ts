@@ -8,6 +8,7 @@ import { QuizMakerComponent } from './components/quiz-maker/quiz-maker.component
 import { QuizComponent } from './components/quiz/quiz.component';
 import { QuestionComponent } from './presentation/question/question.component';
 import { AnswersComponent } from './presentation/answers/answers.component';
+import { AutoFilterComponent } from './presentation/auto-filter/auto-filter.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { AnswersComponent } from './presentation/answers/answers.component';
     QuizComponent,
     QuestionComponent,
     AnswersComponent,
+    AutoFilterComponent
   ],
   imports: [CommonModule, QuizesRoutingModule, HttpClientModule, FormsModule],
   providers: [],

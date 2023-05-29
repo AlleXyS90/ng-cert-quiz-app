@@ -1,42 +1,32 @@
 <div class="row">
   <div class="col-sm-11">
-    <select
-      id="categorySelect"
-      [ngModel]="selectedCategory"
-      (ngModelChange)="onCategoryChanged($event)"
-    >
-      <option [ngValue]="undefined">Select category</option>
-      <option [ngValue]="category" *ngFor="let category of categories$ | async">
-        {{ category.name }}
-      </option>
-    </select>
-    <select
-      *ngIf="
-        selectedCategory &&
-        subcategoriesPrefixes.includes(selectedCategory.name)
-      "
-      [(ngModel)]="selectedSubCategoryId"
-      id="subcategorySelect"
-    >
-      <option [value]="selectedSubCategoryId">Select subcategory</option>
-      <option
-        [value]="subcategory.id"
-        *ngFor="let subcategory of filteredSubcategories"
+    <ng-container *ngIf="categories$ | async as categories">
+      <app-auto-filter
+        label="Select Category"
+        displayedField="name"
+        [items]="categories"
+        (onChange)="onCategoryChanged($event)"
+      ></app-auto-filter>
+      <app-auto-filter
+        *ngIf="
+          selectedCategory &&
+          subcategoriesPrefixes.includes(selectedCategory.name)
+        "
+        label="Select Subcategory"
+        displayedField="name"
+        [items]="filteredSubcategories"
+        (onChange)="onSubcategoryChanged($event)"
       >
-        {{ subcategory.name }}
-      </option>
-    </select>
-    <select #difficulty id="difficultySelect">
-      <option value="">Select difficulty</option>
-      <option>Easy</option>
-      <option>Medium</option>
-      <option>Hard</option>
-    </select>
-    <button
-      class="primary"
-      id="createBtn"
-      (click)="createQuiz(difficulty.value)"
-    >
+      </app-auto-filter>
+      <app-auto-filter
+        label="Select Difficulty"
+        displayedField="name"
+        [items]="['Easy', 'Medium', 'Hard']"
+        (onChange)="onDifficultyChanged($event)"
+      >
+      </app-auto-filter>
+    </ng-container>
+    <button class="primary" id="createBtn" (click)="createQuiz()">
       Create
     </button>
   </div>

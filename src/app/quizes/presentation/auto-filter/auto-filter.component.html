@@ -1,0 +1,10 @@
+<select
+  id="itemSelect"
+  [ngModel]="selectedItem"
+  (ngModelChange)="onItemSelected($event)"
+>
+  <option [ngValue]="undefined">{{ label }}</option>
+  <option [ngValue]="item" *ngFor="let item of items">
+    {{ (displayedField && item[displayedField]) || item }}
+  </option>
+</select>

@@ -18,6 +18,7 @@ export class QuizMakerComponent {
   filteredSubcategories: Category[] = [];
   selectedCategory: Category | undefined = undefined;
   selectedSubCategoryId: number | undefined = undefined;
+  difficulty: string | undefined = undefined;
 
   subcategoriesPrefixes = ['Entertainment', 'Science'];
 
@@ -65,7 +66,15 @@ export class QuizMakerComponent {
     }
   }
 
-  createQuiz(difficulty: string): void {
+  onSubcategoryChanged(event: any): void {
+    this.selectedSubCategoryId = event.id;
+  }
+
+  onDifficultyChanged(event: any): void {
+    this.difficulty = event;
+  }
+
+  createQuiz(): void {
     const catId = (
       this.selectedCategory && this.selectedCategory.id > 0
         ? this.selectedCategory.id
@@ -83,14 +92,14 @@ export class QuizMakerComponent {
       return;
     }
 
-    if (difficulty === '') {
+    if (!this.difficulty) {
       window.alert('Select difficulty');
       return;
     }
 
     this.setLoading();
     this.questions$ = this.quizService
-      .createQuiz(catId, difficulty as Difficulty)
+      .createQuiz(catId, this.difficulty as Difficulty)
       .pipe(tap(() => this.clear()));
   }
 
