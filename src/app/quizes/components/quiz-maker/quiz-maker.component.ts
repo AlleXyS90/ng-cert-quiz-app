@@ -66,12 +66,20 @@ export class QuizMakerComponent {
   }
 
   createQuiz(difficulty: string): void {
-    const catId =
+    const catId = (
       this.selectedCategory && this.selectedCategory.id > 0
         ? this.selectedCategory.id
-        : this.selectedSubCategoryId;
-    if (typeof catId === 'undefined') {
+        : this.selectedSubCategoryId
+    ) as number;
+    if (typeof this.selectedCategory === 'undefined') {
       window.alert('Select a category');
+      return;
+    }
+    if (
+      this.selectedCategory.id < 0 &&
+      typeof this.selectedSubCategoryId === 'undefined'
+    ) {
+      window.alert('Select a subcategory');
       return;
     }
 

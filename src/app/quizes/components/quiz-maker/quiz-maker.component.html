@@ -5,7 +5,7 @@
       [ngModel]="selectedCategory"
       (ngModelChange)="onCategoryChanged($event)"
     >
-      <option [ngValue]="null">Select category</option>
+      <option [ngValue]="undefined">Select category</option>
       <option [ngValue]="category" *ngFor="let category of categories$ | async">
         {{ category.name }}
       </option>
@@ -18,7 +18,7 @@
       [(ngModel)]="selectedSubCategoryId"
       id="subcategorySelect"
     >
-      <option>Select subcategory</option>
+      <option [value]="selectedSubCategoryId">Select subcategory</option>
       <option
         [value]="subcategory.id"
         *ngFor="let subcategory of filteredSubcategories"
@@ -41,7 +41,7 @@
     </button>
   </div>
 </div>
-<h1 *ngIf="loading">Loading... ({{loadingCount}})</h1>
+<h1 *ngIf="loading">Loading... ({{ loadingCount }})</h1>
 <div class="row">
   <app-quiz [questions]="questions$ | async"></app-quiz>
 </div>
