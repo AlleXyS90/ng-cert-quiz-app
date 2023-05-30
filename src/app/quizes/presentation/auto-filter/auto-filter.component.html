@@ -11,11 +11,19 @@
   />
   <div #options class="options">
     <div
+      [id]="
+        'option-' + (displayedField && item[displayedField].toLowerCase()) ||
+        item.toLowerCase()
+      "
       (click)="onItemSelected(item)"
       class="option"
-      *ngFor="let item of filteredItems"
+      *ngFor="let item of filteredItems; let i = index"
     >
-      {{ (displayedField && item[displayedField]) || item }}
+      <span
+        [innerHTML]="
+          innerOptions.get((displayedField && item[displayedField]) || item)
+        "
+      ></span>
     </div>
   </div>
 </div>

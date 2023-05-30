@@ -12,7 +12,6 @@ import {
   selector: 'app-auto-filter',
   templateUrl: './auto-filter.component.html',
   styleUrls: ['./auto-filter.component.css'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AutoFilterComponent implements OnInit {
   // @Input() request: AutoFilterRequest<any> = {
@@ -30,6 +29,7 @@ export class AutoFilterComponent implements OnInit {
 
   filteredItems: any[] = [...this.items];
   userInput: string | undefined = undefined;
+  innerOptions: Map<string, string> = new Map();
 
   @ViewChild('inputField') inputField!: ElementRef<HTMLInputElement>;
   @ViewChild('options') options!: ElementRef<HTMLInputElement>;
@@ -38,6 +38,8 @@ export class AutoFilterComponent implements OnInit {
 
   onUserInputChanged(event: any): void {
     this.filterItems(event.toLowerCase());
+
+    this.userInput = event;
   }
 
   onInputBlur(): void {
@@ -45,25 +47,18 @@ export class AutoFilterComponent implements OnInit {
       if (this.options.nativeElement.style.display !== 'none') {
         this.options.nativeElement.style.display = 'none';
       }
-    }, 500);
+    }, 300);
   }
 
   onInputFocus(): void {
-    this.options.nativeElement.style.display = 'block';
-    this.filterItems('');
-  }
-
-  filterItems(input: string): void {
-    this.options.nativeElement.style.display = 'block';
-
-    if (typeof this.displayedField !== 'undefined') {
-      this.filteredItems = this.items.filter((item) =>
-        item[this.displayedField].toLowerCase().includes(input)
-      );
+    if (!this.userInput) {
+      this.filterItems('');
     } else {
-      this.filteredItems = [
-        ...this.items.filter((item) => item.toLowerCase().includes(input)),
-      ];
+      this.filterItems(this.userInput.toLowerCase());
+    }
+
+    if (this.options.nativeElement.style.display !== 'block') {
+      this.options.nativeElement.style.display = 'block';
     }
   }
 
@@ -75,50 +70,58 @@ export class AutoFilterComponent implements OnInit {
     this.onChange.emit(item);
   }
 
-  // onInput(event: Event) {
-  //   const input = event.target as HTMLInputElement;
-  //   const val = input.value;
-  //   this.closeAllLists();
+  filterItems(input: string): void {
+    if (typeof this.displayedField !== 'undefined') {
+      this.filteredItems = this.items.filter((item) =>
+        item[this.displayedField].toLowerCase().includes(input)
+      );
+    } else {
+      this.filteredItems = [
+        ...this.items.filter((item) => item.toLowerCase().includes(input)),
+      ];
+    }
 
-  //   if (!val) {
-  //     return;
-  //   }
+    this.innerOptions.clear();
+    this.filteredItems.forEach((item) => {
+      const key = (this.displayedField && item[this.displayedField]) || item;
+      this.innerOptions.set(key, this.setLabelWithStyle('', key, input));
+    });
 
-  //   const div = document.createElement('div');
-  //   div.setAttribute('id', this.label + 'autocomplete-list');
-  //   div.setAttribute('class', 'autocomplete-items');
-  //   input.parentNode?.appendChild(div);
+    if (this.options.nativeElement.style.display !== 'block') {
+      this.options.nativeElement.style.display = 'block';
+    }
+  }
 
-  //   for (let i = 0; i < this.items.length; i++) {
-  //     const item = this.displayedField
-  //       ? this.items[i][this.displayedField]
-  //       : this.items[i];
+  setLabelWithStyle(
+    innerLabel: string,
+    str: string,
+    input: string,
+    acc: boolean = false
+  ): string {
+    if (!input) {
+      return str;
+    }
 
-  //     if (item.substr(0, val.length).toUpperCase() === val.toUpperCase()) {
-  //       const itemDiv = document.createElement('div');
-  //       itemDiv.innerHTML =
-  //         '<strong>' + item.substr(0, val.length) + '</strong>';
-  //       itemDiv.innerHTML += item.substr(val.length);
-  //       itemDiv.innerHTML +=
-  //         "<input type='hidden' value='" + this.items[i] + "'>";
+    const index = str.toLowerCase().indexOf(input);
 
-  //       itemDiv.setAttribute('class', 'autocomplete-item');
+    // return previous + rest label
+    if (acc && index === -1) {
+      return innerLabel + str;
+    }
 
-  //       itemDiv.addEventListener('click', () => {
-  //         this.inputField.nativeElement.value =
-  //           itemDiv.getElementsByTagName('input')[0].value;
-  //         this.closeAllLists();
-  //       });
+    if (acc) {
+      innerLabel += str.substr(0, index);
+    } else {
+      innerLabel = str.substr(0, index);
+    }
 
-  //       div.appendChild(itemDiv);
-  //     }
-  //   }
-  // }
+    innerLabel += `<strong>${str.substr(index, input.length)}</strong>`;
 
-  // closeAllLists() {
-  //   const lists = document.getElementsByClassName('autocomplete-items');
-  //   while (lists.length) {
-  //     lists[0].parentNode?.removeChild(lists[0]);
-  //   }
-  // }
+    const rest = str.substr(index + input.length);
+
+    return (
+      (rest && this.setLabelWithStyle(innerLabel, rest, input, true)) ||
+      innerLabel
+    );
+  }
 }
