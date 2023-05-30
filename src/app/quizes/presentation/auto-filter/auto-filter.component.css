@@ -11,7 +11,7 @@ input {
 
 .options {
   position: absolute;
-  width: 100%;
+  display: none;
   width: calc(100% - 8px);
   margin: 4px;
   box-sizing: border-box;
