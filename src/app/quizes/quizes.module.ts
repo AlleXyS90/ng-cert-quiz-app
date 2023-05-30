@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
 import { QuizesRoutingModule } from './quizes-routing.module';
 import { QuizMakerComponent } from './components/quiz-maker/quiz-maker.component';
 import { QuizComponent } from './components/quiz/quiz.component';
@@ -16,9 +15,15 @@ import { AutoFilterComponent } from './presentation/auto-filter/auto-filter.comp
     QuizComponent,
     QuestionComponent,
     AnswersComponent,
-    AutoFilterComponent
+    AutoFilterComponent,
   ],
-  imports: [CommonModule, QuizesRoutingModule, HttpClientModule, FormsModule],
+  imports: [
+    CommonModule,
+    QuizesRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   providers: [],
 })
 export class QuizesModule {}

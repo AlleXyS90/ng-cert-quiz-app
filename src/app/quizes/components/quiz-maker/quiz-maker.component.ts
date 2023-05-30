@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable, interval, map, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { QuizService } from '../../services/quiz.service';
 import { Category } from '../../models/category';

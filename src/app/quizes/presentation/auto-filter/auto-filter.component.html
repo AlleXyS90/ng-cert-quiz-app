@@ -1,10 +1,21 @@
-<select
-  id="itemSelect"
-  [ngModel]="selectedItem"
-  (ngModelChange)="onItemSelected($event)"
->
-  <option [ngValue]="undefined">{{ label }}</option>
-  <option [ngValue]="item" *ngFor="let item of items">
-    {{ (displayedField && item[displayedField]) || item }}
-  </option>
-</select>
+<div class="autocomplete">
+  <input
+    #inputField
+    id="inputField"
+    name="userInput"
+    [placeholder]="label"
+    [ngModel]="userInput"
+    (ngModelChange)="onUserInputChanged($event)"
+    (blur)="onInputBlur()"
+    (focus)="onInputFocus()"
+  />
+  <div #options class="options">
+    <div
+      (click)="onItemSelected(item)"
+      class="option"
+      *ngFor="let item of filteredItems"
+    >
+      {{ (displayedField && item[displayedField]) || item }}
+    </div>
+  </div>
+</div>
