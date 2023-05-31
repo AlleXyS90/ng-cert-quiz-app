@@ -1,0 +1,9 @@
+.change-btn {
+  background-color: #000;
+  color: #fff;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #566573;
+  }
+}

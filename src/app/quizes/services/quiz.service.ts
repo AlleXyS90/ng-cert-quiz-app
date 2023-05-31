@@ -7,6 +7,7 @@ import { Category } from '../models/category';
 import { Difficulty } from '../models/types';
 import { ApiQuestion } from '../models/api-question';
 import { Question } from '../models/question';
+import { CreateQuizParams } from '../models/create-quiz-params';
 
 @Injectable({
   providedIn: 'root',
@@ -23,15 +24,12 @@ export class QuizService {
       .pipe(map((res) => res.trivia_categories));
   }
 
-  createQuiz(
-    categoryId: number,
-    difficulty: Difficulty
-  ): Observable<Question[]> {
+  createQuiz(params: CreateQuizParams): Observable<Question[]> {
     return this.http
       .get<{ results: ApiQuestion[] }>(
-        `${
-          this.API_URL
-        }/api.php?amount=5&category=${categoryId}&difficulty=${difficulty.toLowerCase()}&type=multiple`
+        `${this.API_URL}/api.php?amount=${params.amount}&category=${
+          params.categoryId
+        }&difficulty=${params.difficulty.toLowerCase()}&type=multiple`
       )
       .pipe(
         map((res) => {

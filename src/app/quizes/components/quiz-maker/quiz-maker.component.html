@@ -30,7 +30,11 @@
     </button>
   </div>
 </div>
-<h1 *ngIf="loading">Loading... ({{ loadingCount }})</h1>
 <div class="row">
-  <app-quiz [questions]="questions$ | async"></app-quiz>
+  <app-quiz
+    (onChange)="onQuestionChange($event)"
+    [questions]="questions"
+    [canChangeQuestion]="canChangeQuestion"
+  ></app-quiz>
 </div>
+<h1 *ngIf="loading">Loading... ({{ loadingCount }})</h1>

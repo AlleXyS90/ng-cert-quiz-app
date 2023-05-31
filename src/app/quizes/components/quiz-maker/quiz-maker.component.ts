@@ -1,24 +1,28 @@
-import { Component } from '@angular/core';
-import { Observable, map, tap } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { Observable, Subscription, map } from 'rxjs';
 
 import { QuizService } from '../../services/quiz.service';
 import { Category } from '../../models/category';
 import { Question } from '../../models/question';
 import { Difficulty } from '../../models/types';
+import { CreateQuizParams } from '../../models/create-quiz-params';
 
 @Component({
   selector: 'app-quiz-maker',
   templateUrl: './quiz-maker.component.html',
   styleUrls: ['./quiz-maker.component.css'],
 })
-export class QuizMakerComponent {
+export class QuizMakerComponent implements OnDestroy {
   categories$: Observable<Category[]>;
-  questions$!: Observable<Question[]>;
+  // questions$!: Observable<Question[]>;
   subcategories: Category[] = [];
   filteredSubcategories: Category[] = [];
   selectedCategory: Category | undefined = undefined;
   selectedSubCategoryId: number | undefined = undefined;
   difficulty: string | undefined = undefined;
+  questions: Question[] = [];
+  questionsSubscription$: Subscription | undefined;
+  canChangeQuestion: boolean = true;
 
   subcategoriesPrefixes = ['Entertainment', 'Science'];
 
@@ -54,6 +58,12 @@ export class QuizMakerComponent {
     );
   }
 
+  ngOnDestroy(): void {
+    if (typeof this.questionsSubscription$ !== 'undefined') {
+      this.questionsSubscription$.unsubscribe();
+    }
+  }
+
   onCategoryChanged(event: any): void {
     this.selectedCategory = event;
     const haveSubcategories = this.checkForSubcategories(event?.name);
@@ -75,35 +85,75 @@ export class QuizMakerComponent {
   }
 
   createQuiz(): void {
-    const catId = (
+    const params = this.getParams(5);
+
+    if (typeof params === 'undefined') {
+      return;
+    }
+
+    this.setLoading();
+    this.questionsSubscription$ = this.quizService
+      .createQuiz(params)
+      .subscribe((questions) => {
+        this.canChangeQuestion = true;
+        this.questions = questions;
+        this.clear();
+      });
+  }
+
+  onQuestionChange(question: string): void {
+    const params = this.getParams(1);
+
+    if (typeof params === 'undefined') {
+      return;
+    }
+
+    /** questions$ observable combinedLatest with anotherQuestions$ doesn't keep the previous questiosn versions
+     * due of that, subscribing to it is prefered ++ unsubscribe in OnDestroy lifecycle
+     */
+    this.setLoading();
+    this.questionsSubscription$ = this.quizService
+      .createQuiz(params)
+      .subscribe((newQuestions) => {
+        const indexToReplace = this.questions
+          .map((x) => x.question)
+          .indexOf(question);
+
+        this.questions = this.questions.map((item, index) =>
+          index !== indexToReplace ? item : newQuestions[0]
+        );
+        this.canChangeQuestion = false;
+        this.clear();
+      });
+  }
+
+  private getParams(amount: number): CreateQuizParams | undefined {
+    const categoryId = (
       this.selectedCategory && this.selectedCategory.id > 0
         ? this.selectedCategory.id
         : this.selectedSubCategoryId
     ) as number;
     if (typeof this.selectedCategory === 'undefined') {
       window.alert('Select a category');
-      return;
+      return undefined;
     }
     if (
       this.selectedCategory?.id < 0 &&
       typeof this.selectedSubCategoryId === 'undefined'
     ) {
       window.alert('Select a subcategory');
-      return;
+      return undefined;
     }
 
     if (!this.difficulty) {
       window.alert('Select difficulty');
-      return;
+      return undefined;
     }
 
-    this.setLoading();
-    this.questions$ = this.quizService
-      .createQuiz(catId, this.difficulty as Difficulty)
-      .pipe(tap(() => this.clear()));
+    return { categoryId, difficulty: this.difficulty as Difficulty, amount };
   }
 
-  checkForSubcategories(category: string): boolean {
+  private checkForSubcategories(category: string): boolean {
     return this.subcategoriesPrefixes.includes(category);
   }
 

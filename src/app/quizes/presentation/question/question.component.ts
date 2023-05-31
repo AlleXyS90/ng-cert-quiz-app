@@ -18,6 +18,9 @@ export class QuestionComponent {
   correctAnswer?: string;
   @Input()
   userAnswer?: string;
+  @Input() canChangeQuestion: boolean = true;
+
+  @Output() onChangeQuestion = new EventEmitter<string>();
 
   getButtonClass(answer: string): string {
     if (!this.userAnswer) {
@@ -38,5 +41,9 @@ export class QuestionComponent {
   buttonClicked(answer: string): void {
     this.currentSelection = answer;
     this.change.emit(answer);
+  }
+
+  changeQuestion(question: string): void {
+    this.onChangeQuestion.emit(question);
   }
 }
