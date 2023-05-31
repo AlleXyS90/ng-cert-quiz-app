@@ -23,6 +23,7 @@ export class AutoFilterComponent implements OnInit {
   @Input() displayedField!: string;
   @Input() items: any[] = [];
 
+  /** return item type or undefined */
   @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
 
   selectedItem: any | undefined = undefined;
@@ -42,7 +43,25 @@ export class AutoFilterComponent implements OnInit {
     this.userInput = event;
   }
 
-  onInputBlur(): void {
+  /** 
+    -- emit 'undefined' value if the user input doesn't match the value 
+     eq: when type is string, the user input should match, 
+         if the type is object user input should match the object displayed label
+    -- in the end, hide dropdown element
+  */
+  onInputBlur(event: any): void {
+    if (typeof this.selectedItem === 'object' && this.selectedItem) {
+      const selectedItemLabel =
+        this.displayedField && this.selectedItem[this.displayedField];
+      if (selectedItemLabel !== event.target.value) {
+        this.selectedItem = undefined;
+        this.onChange.emit(this.selectedItem);
+      }
+    } else if (this.selectedItem && this.selectedItem !== event.target.value) {
+      this.selectedItem = undefined;
+      this.onChange.emit(this.selectedItem);
+    }
+
     setTimeout(() => {
       if (this.options.nativeElement.style.display !== 'none') {
         this.options.nativeElement.style.display = 'none';
@@ -67,7 +86,7 @@ export class AutoFilterComponent implements OnInit {
 
     this.selectedItem = item;
     this.userInput = (this.displayedField && item[this.displayedField]) || item;
-    this.onChange.emit(item);
+    this.onChange.emit(this.selectedItem);
   }
 
   filterItems(input: string): void {

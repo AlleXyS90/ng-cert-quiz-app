@@ -6,7 +6,7 @@
     [placeholder]="label"
     [ngModel]="userInput"
     (ngModelChange)="onUserInputChanged($event)"
-    (blur)="onInputBlur()"
+    (blur)="onInputBlur($event)"
     (focus)="onInputFocus()"
   />
   <div #options class="options">

@@ -67,7 +67,7 @@ export class QuizMakerComponent {
   }
 
   onSubcategoryChanged(event: any): void {
-    this.selectedSubCategoryId = event.id;
+    this.selectedSubCategoryId = event?.id;
   }
 
   onDifficultyChanged(event: any): void {
@@ -85,7 +85,7 @@ export class QuizMakerComponent {
       return;
     }
     if (
-      this.selectedCategory.id < 0 &&
+      this.selectedCategory?.id < 0 &&
       typeof this.selectedSubCategoryId === 'undefined'
     ) {
       window.alert('Select a subcategory');
