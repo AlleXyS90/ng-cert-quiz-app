@@ -1,9 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Question } from '../../models/question';
 
 @Component({
@@ -20,7 +15,10 @@ export class QuestionComponent {
   userAnswer?: string;
   @Input() canChangeQuestion: boolean = true;
 
-  @Output() onChangeQuestion = new EventEmitter<string>();
+  @Output()
+  changeAnswer = new EventEmitter<string>();
+  @Output()
+  onChangeQuestion = new EventEmitter<string>();
 
   getButtonClass(answer: string): string {
     if (!this.userAnswer) {
@@ -33,14 +31,11 @@ export class QuestionComponent {
     return 'primary';
   }
 
-  @Output()
-  change = new EventEmitter<string>();
-
   currentSelection!: string;
 
   buttonClicked(answer: string): void {
     this.currentSelection = answer;
-    this.change.emit(answer);
+    this.changeAnswer.emit(answer);
   }
 
   changeQuestion(question: string): void {

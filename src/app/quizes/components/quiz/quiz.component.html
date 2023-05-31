@@ -1,5 +1,5 @@
 <app-question *ngFor="let q of questions; index as i" [question]="q"
-              (change)="userAnswers[i] = $event"
+              (changeAnswer)="userAnswers[i] = $event"
               [canChangeQuestion]="canChangeQuestion"
               (onChangeQuestion)="onChangeQuestion($event)">
 </app-question>

@@ -14,17 +14,16 @@ import {
   styleUrls: ['./auto-filter.component.css'],
 })
 export class AutoFilterComponent implements OnInit {
-  // @Input() request: AutoFilterRequest<any> = {
-  //   label: '',
-  //   displayedField: '',
-  //   items: [],
-  // };
-  @Input() label!: string;
-  @Input() displayedField!: string;
-  @Input() items: any[] = [];
+  @Input({ required: true })
+  label!: string;
+  @Input()
+  displayedField: string | undefined;
+  @Input()
+  items: any[] = [];
 
   /** return item type or undefined */
-  @Output() onChange: EventEmitter<any> = new EventEmitter<any>();
+  @Output() 
+  onChange: EventEmitter<any> = new EventEmitter<any>();
 
   selectedItem: any | undefined = undefined;
 
@@ -92,7 +91,7 @@ export class AutoFilterComponent implements OnInit {
   filterItems(input: string): void {
     if (typeof this.displayedField !== 'undefined') {
       this.filteredItems = this.items.filter((item) =>
-        item[this.displayedField].toLowerCase().includes(input)
+        item[this.displayedField as string].toLowerCase().includes(input)
       );
     } else {
       this.filteredItems = [

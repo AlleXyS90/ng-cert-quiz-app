@@ -12,9 +12,11 @@ import { Question } from '../../models/question';
 export class QuizComponent {
   @Input()
   questions: Question[] | null = [];
-  @Input() canChangeQuestion: boolean = true;
+  @Input() 
+  canChangeQuestion: boolean = true;
 
-  @Output() onChange = new EventEmitter<string>();
+  @Output() 
+  onChange = new EventEmitter<string>();
 
   userAnswers: string[] = [];
   quizService = inject(QuizService);
