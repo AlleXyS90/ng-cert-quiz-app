@@ -1,10 +1,19 @@
-<app-question *ngFor="let q of questions; index as i" [question]="q"
-              (changeAnswer)="userAnswers[i] = $event"
-              [canChangeQuestion]="canChangeQuestion"
-              (onChangeQuestion)="onChangeQuestion($event)">
-</app-question>
+<ng-container *ngIf="questionsState$ | async as state">
+  <app-question
+    *ngFor="let q of state.questions; index as i"
+    [question]="q"
+    (changeAnswer)="userAnswers[i] = $event"
+    [canChangeQuestion]="state.canChange"
+    (onChangeQuestion)="onChangeQuestion($event)"
+  >
+  </app-question>
+</ng-container>
 <div>
-  <button class="inverse large" *ngIf="userAnswers.length == 5" (click)="submit()">
+  <button
+    class="inverse large"
+    *ngIf="userAnswers.length == 5"
+    (click)="submit()"
+  >
     Submit
   </button>
 </div>

@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Observable, Subscription, map } from 'rxjs';
 
+import { StoreService } from '../../services/store.service';
 import { QuizService } from '../../services/quiz.service';
 import { Category } from '../../models/category';
-import { Question } from '../../models/question';
 import { Difficulty } from '../../models/types';
 import { CreateQuizParams } from '../../models/create-quiz-params';
 
@@ -13,19 +13,18 @@ import { CreateQuizParams } from '../../models/create-quiz-params';
   styleUrls: ['./quiz-maker.component.css'],
 })
 export class QuizMakerComponent implements OnDestroy {
-  categories$: Observable<Category[]>;
-  // questions$!: Observable<Question[]>;
   subcategories: Category[] = [];
   filteredSubcategories: Category[] = [];
   selectedCategory: Category | undefined = undefined;
   selectedSubCategoryId: number | undefined = undefined;
   difficulty: string | undefined = undefined;
-  questions: Question[] = [];
+
+  categories$: Observable<Category[]>;
+  changeQuestionSubscription$: Subscription;
+
   questionsSubscription$: Subscription | undefined;
-  canChangeQuestion: boolean = true;
 
   subcategoriesPrefixes = ['Entertainment', 'Science'];
-
   itemsWithSubcategories = [
     { id: -1, name: 'Entertainment' },
     { id: -2, name: 'Science' },
@@ -35,7 +34,10 @@ export class QuizMakerComponent implements OnDestroy {
   loadingCount: number = 0;
   interval: any;
 
-  constructor(protected quizService: QuizService) {
+  constructor(
+    protected quizService: QuizService,
+    private storeService: StoreService
+  ) {
     this.setLoading();
 
     this.categories$ = quizService.getAllCategories().pipe(
@@ -56,11 +58,20 @@ export class QuizMakerComponent implements OnDestroy {
         ];
       })
     );
+
+    this.changeQuestionSubscription$ =
+      this.storeService.changeQuestion$.subscribe((title) =>
+        this.onQuestionChange(title)
+      );
   }
 
   ngOnDestroy(): void {
     if (typeof this.questionsSubscription$ !== 'undefined') {
       this.questionsSubscription$.unsubscribe();
+    }
+
+    if (typeof this.changeQuestionSubscription$ !== 'undefined') {
+      this.changeQuestionSubscription$.unsubscribe();
     }
   }
 
@@ -95,34 +106,23 @@ export class QuizMakerComponent implements OnDestroy {
     this.questionsSubscription$ = this.quizService
       .createQuiz(params)
       .subscribe((questions) => {
-        this.canChangeQuestion = true;
-        this.questions = questions;
+        this.storeService.set(questions);
         this.clear();
       });
   }
 
-  onQuestionChange(question: string): void {
+  onQuestionChange(questionTitle: string): void {
     const params = this.getParams(1);
 
     if (typeof params === 'undefined') {
       return;
     }
 
-    /** questions$ observable combinedLatest with anotherQuestions$ doesn't keep the previous questiosn versions
-     * due of that, subscribing to it is prefered ++ unsubscribe in OnDestroy lifecycle
-     */
     this.setLoading();
     this.questionsSubscription$ = this.quizService
       .createQuiz(params)
       .subscribe((newQuestions) => {
-        const indexToReplace = this.questions
-          .map((x) => x.question)
-          .indexOf(question);
-
-        this.questions = this.questions.map((item, index) =>
-          index !== indexToReplace ? item : newQuestions[0]
-        );
-        this.canChangeQuestion = false;
+        this.storeService.changeQuestion(questionTitle, newQuestions[0]);
         this.clear();
       });
   }

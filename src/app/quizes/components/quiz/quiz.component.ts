@@ -1,8 +1,9 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { QuizService } from '../../services/quiz.service';
-import { Question } from '../../models/question';
+import { QuestionsState, StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-quiz',
@@ -10,25 +11,25 @@ import { Question } from '../../models/question';
   styleUrls: ['./quiz.component.css'],
 })
 export class QuizComponent {
-  @Input()
-  questions: Question[] | null = [];
-  @Input() 
-  canChangeQuestion: boolean = true;
-
-  @Output() 
-  onChange = new EventEmitter<string>();
+  questionsState$: Observable<QuestionsState>;
 
   userAnswers: string[] = [];
   quizService = inject(QuizService);
   router = inject(Router);
 
-  onChangeQuestion(event: string): void {
-    this.canChangeQuestion = false;
-    this.onChange.emit(event);
+  constructor(private storeService: StoreService) {
+    this.questionsState$ = this.storeService.questionsState$;
+  }
+
+  onChangeQuestion(title: string): void {
+    this.storeService.changeQuestion$.next(title);
   }
 
   submit(): void {
-    this.quizService.computeScore(this.questions ?? [], this.userAnswers);
+    this.quizService.computeScore(
+      this.storeService.getQuestions() ?? [],
+      this.userAnswers
+    );
     this.router.navigateByUrl('/result');
   }
 }

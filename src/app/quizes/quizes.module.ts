@@ -7,7 +7,7 @@ import { QuizMakerComponent } from './components/quiz-maker/quiz-maker.component
 import { QuizComponent } from './components/quiz/quiz.component';
 import { QuestionComponent } from './presentation/question/question.component';
 import { AnswersComponent } from './presentation/answers/answers.component';
-import { AutoFilterComponent } from './presentation/auto-filter/auto-filter.component';
+import { SharedModule } from '../_shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -15,15 +15,8 @@ import { AutoFilterComponent } from './presentation/auto-filter/auto-filter.comp
     QuizComponent,
     QuestionComponent,
     AnswersComponent,
-    AutoFilterComponent,
   ],
-  imports: [
-    CommonModule,
-    QuizesRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, QuizesRoutingModule, HttpClientModule, SharedModule],
   providers: [],
 })
 export class QuizesModule {}

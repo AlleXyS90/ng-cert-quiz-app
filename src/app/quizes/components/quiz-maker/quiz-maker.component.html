@@ -31,10 +31,6 @@
   </div>
 </div>
 <div class="row">
-  <app-quiz
-    (onChange)="onQuestionChange($event)"
-    [questions]="questions"
-    [canChangeQuestion]="canChangeQuestion"
-  ></app-quiz>
+  <app-quiz></app-quiz>
 </div>
 <h1 *ngIf="loading">Loading... ({{ loadingCount }})</h1>
