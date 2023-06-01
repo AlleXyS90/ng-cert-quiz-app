@@ -17,7 +17,7 @@ export const initialState: QuestionsState = {
   providedIn: 'root',
 })
 export class StoreService {
-  state = initialState;
+  private state = initialState;
   
   questionsState$: Subject<QuestionsState> = new Subject();
   changeQuestion$: Subject<string> = new Subject();

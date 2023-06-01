@@ -6,6 +6,5 @@ import {Component} from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
-
+  /** live app on: https://quiz-maker-lexapp.netlify.app/ */
 }
