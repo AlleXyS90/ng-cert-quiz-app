@@ -13,12 +13,10 @@ export const initialState: QuestionsState = {
   canChange: true,
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class StoreService {
   private state = initialState;
-  
+
   questionsState$: Subject<QuestionsState> = new Subject();
   changeQuestion$: Subject<string> = new Subject();
 

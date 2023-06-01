@@ -4,14 +4,11 @@ import { map, Observable } from 'rxjs';
 
 import { Results } from '../models/results';
 import { Category } from '../models/category';
-import { Difficulty } from '../models/types';
 import { ApiQuestion } from '../models/api-question';
 import { Question } from '../models/question';
 import { CreateQuizParams } from '../models/create-quiz-params';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class QuizService {
   private API_URL = 'https://opentdb.com/';
   private latestResults!: Results;
